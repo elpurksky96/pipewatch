@@ -61,6 +61,16 @@ def test_diff_detects_changes():
     assert "avg_duration" in d
 
 
+def test_diff_ignores_unchanged_fields():
+    """Fields with identical values should not appear in the diff."""
+    old = _snap(success_rate=0.8, avg_duration=3.0, total_runs=5)
+    new = _snap(success_rate=0.9, avg_duration=3.0, total_runs=5)
+    d = diff_snapshots(old, new)
+    assert "avg_duration" not in d
+    assert "total_runs" not in d
+    assert "success_rate" in d
+
+
 def test_latest_snapshot_none(tmp_path):
     assert latest_snapshot(str(tmp_path / "x.json")) is None
 
