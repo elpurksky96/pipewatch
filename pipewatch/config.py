@@ -45,11 +45,25 @@ class PipewatchConfig:
 
 
 def load_config(path: str = DEFAULT_CONFIG_PATH) -> PipewatchConfig:
-    """Load configuration from a JSON file, falling back to defaults."""
+    """Load configuration from a JSON file, falling back to defaults.
+
+    Args:
+        path: Path to the JSON config file. Defaults to ~/.pipewatch.json.
+
+    Returns:
+        A PipewatchConfig instance populated from the file, or a default
+        instance if the file does not exist.
+
+    Raises:
+        ValueError: If the file exists but contains invalid JSON.
+    """
     if not os.path.exists(path):
         return PipewatchConfig()
     with open(path, "r") as f:
-        data = json.load(f)
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in config file '{path}': {e}") from e
     return PipewatchConfig.from_dict(data)
 
 
