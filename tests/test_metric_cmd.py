@@ -78,6 +78,17 @@ def test_cmd_metric_show_aggregated(tmp_path, capsys):
     assert data["count"] == 3.0
 
 
+def test_cmd_metric_record_stores_command(tmp_path):
+    """Verify that the command field is persisted correctly in the recorded entry."""
+    path = str(tmp_path / "m.jsonl")
+    args = _args(command="ingest", name="latency", value=0.5)
+    args.metrics_path = path
+    cmd_metric_record(args)
+    pts = load_metrics(path)
+    assert len(pts) == 1
+    assert pts[0].command == "ingest"
+
+
 def test_cmd_metric_record_multiple(tmp_path):
     path = str(tmp_path / "m.jsonl")
     for v in [10.0, 20.0]:
